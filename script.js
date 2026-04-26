@@ -217,12 +217,33 @@ document.addEventListener('DOMContentLoaded', () => {
         spinner.classList.remove('d-none');
         submitBtn.disabled = true;
 
-        // Simulate API call and Payment Gateway Processing
-        setTimeout(() => {
+        const bookingData = {
+            names: document.getElementById('names').value,
+            date: document.getElementById('date').value,
+            location: document.getElementById('location').value,
+            package: document.getElementById('packageSelect').value,
+            amount: document.getElementById('summaryAdvance').textContent,
+            payment_method: document.querySelector('input[name="payment"]:checked').value
+        };
+
+        fetch('/api/book', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(bookingData)
+        })
+        .then(response => response.json())
+        .then(data => {
             step2.classList.remove('active');
             step3.classList.add('active');
             step3.classList.remove('hidden');
-        }, 2000); // 2 second mock delay
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Server error. Please ensure the Python backend is running.');
+            submitBtn.disabled = false;
+            btnText.classList.remove('d-none');
+            spinner.classList.add('d-none');
+        });
     });
 
     // Card Input Formatting (Mock)
